@@ -1,0 +1,10 @@
+﻿  MyForm.cpp
+C:\Users\AA\source\repos\Project4\Project4\STU_SIGN.h(265,3): error C2065: 'ppp': undeclared identifier
+C:\Users\AA\source\repos\Project4\Project4\MyForm.cpp(6,33): warning C4829: Possibly incorrect parameters to function main. Consider 'int main(Platform::Array<Platform::String^>^ argv)'
+  MyForm1.cpp
+C:\Users\AA\source\repos\Project4\Project4\STU_SIGN.h(265,3): error C2065: 'ppp': undeclared identifier
+  STU.cpp
+C:\Users\AA\source\repos\Project4\Project4\STU_SIGN.h(265,3): error C2065: 'ppp': undeclared identifier
+  STU_SIGN.cpp
+C:\Users\AA\source\repos\Project4\Project4\STU_SIGN.h(265,3): error C2065: 'ppp': undeclared identifier
+  Generating Code...
