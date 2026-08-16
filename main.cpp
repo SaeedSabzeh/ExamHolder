@@ -3,6 +3,7 @@
 #include "professor.h"
 #include <memory>
 #include <cstdlib>
+#include <chrono>
 #include "io.h"
 
 
@@ -28,6 +29,9 @@ void tarikhche();
 void modiriyat();
 void tashih();
 void moroor();
+void dadan_azmoon();
+void nomarat();
+int jaye_daneshjoo(const std::shared_ptr<azmoon>& az, int shomare_stu);
 
 int main()
 {
@@ -245,11 +249,15 @@ void panel_stu () {
     std::cout << "ba movafaqiat vared shodid!" << std::endl;
     std::cout << "*******************************************************" << std::endl;
 
+label5:
+    std::cout << std::endl;
+    std::cout << "*******************************************************" << std::endl;
+
     std::cout << "karbar : " << list_stu[vared_shode_stu]->first_name << " " << list_stu[vared_shode_stu]->last_name << std::endl;
     std::cout << std::endl;
 
     std::cout << "1. moroor azmoon ha" << std::endl;
-    std::cout << "2. azmoon haye baadi va dar hal bargozari" << std::endl;
+    std::cout << "2. dadan azmoon" << std::endl;
     std::cout << "3. nomarat" << std::endl;
     std::cout << "4. khorooj az hesab" << std::endl;
 
@@ -260,15 +268,151 @@ void panel_stu () {
     {
     case 1:
         moroor();
+        goto label5;
         break;
     case 2:
-
+        dadan_azmoon();
+        goto label5;
         break;
     case 3:
+        nomarat();
+        goto label5;
         break;
-    case 4: 
+    case 4:
         break;
 
+    }
+}
+
+// Where this student sits in an exam's parallel students/nomreha vectors.
+// Returns -1 if the student is not enrolled on that exam.
+int jaye_daneshjoo(const std::shared_ptr<azmoon>& az, int shomare_stu) {
+    for (size_t i = 0; i < az->students.size(); i++) {
+        if (az->students[i] == shomare_stu) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
+// Sits an exam: shows each question in turn and collects an answer, stopping
+// early if the professor's time limit runs out. The whole sheet is stored as
+// one string in the student's pasokhha slot for that exam, which is what the
+// professor's grading screen reads.
+//
+// The clock is checked between questions, not during one. A student already
+// looking at a question keeps as long as they like to answer it; the limit
+// stops them being shown the next one. Interrupting a blocking read would need
+// threads or platform-specific console input, which is more than this program
+// is built for.
+void dadan_azmoon() {
+    student& man = *list_stu[vared_shode_stu];
+    if (man.azmoonha.empty()) {
+        std::cout << "shoma dar hich azmooni sabt nam nashodeid!" << std::endl;
+        return;
+    }
+
+    std::cout << "======   azmoon haye shoma   ======" << std::endl;
+    for (size_t i = 0; i < man.azmoonha.size(); i++) {
+        std::cout << i + 1 << ". " << man.azmoonha[i]->get_name()
+            << "  (" << man.azmoonha[i]->time << " daqiqe, "
+            << man.azmoonha[i]->get_tedad_soal() << " soal)";
+        if (i < man.pasokhha.size() && !man.pasokhha[i].empty()) {
+            std::cout << "   --> qablan dade shode";
+        }
+        std::cout << std::endl;
+    }
+    std::cout << "\n->";
+    int n;
+    if (!bekhan_adad(n)) {
+        return;
+    }
+    if (n < 1 || n > static_cast<int>(man.azmoonha.size())) {
+        std::cout << "shomare azmoon motabar nist!" << std::endl;
+        return;
+    }
+
+    size_t shomare_azmoon = static_cast<size_t>(n - 1);
+    std::shared_ptr<azmoon> az = man.azmoonha[shomare_azmoon];
+
+    while (man.pasokhha.size() <= shomare_azmoon) {
+        man.pasokhha.push_back("");
+    }
+    if (!man.pasokhha[shomare_azmoon].empty()) {
+        std::cout << "shoma qablan in azmoon ra dade id!" << std::endl;
+        return;
+    }
+    if (az->soalat.empty()) {
+        std::cout << "in azmoon hanooz soali nadarad!" << std::endl;
+        return;
+    }
+
+    system("cls");
+    std::cout << "===============  " << az->get_name() << "  ===============" << std::endl;
+    std::cout << "tedad soalat : " << az->get_tedad_soal() << std::endl;
+    std::cout << "zaman        : " << az->time << " daqiqe" << std::endl;
+    std::cout << "\nbaraye shoroo Enter ra bezanid...";
+    std::string khali;
+    std::getline(std::cin, khali);
+    std::getline(std::cin, khali);
+
+    std::chrono::steady_clock::time_point shoroo = std::chrono::steady_clock::now();
+    long long koll_sanie = static_cast<long long>(az->time) * 60;
+
+    std::string barge;
+    size_t javab_dade = 0;
+    for (size_t i = 0; i < az->soalat.size(); i++) {
+        long long gozashte = std::chrono::duration_cast<std::chrono::seconds>(
+            std::chrono::steady_clock::now() - shoroo).count();
+        long long mande = koll_sanie - gozashte;
+        if (mande <= 0) {
+            std::cout << "\nzaman azmoon tamam shod!" << std::endl;
+            break;
+        }
+
+        system("cls");
+        std::cout << "soal " << i + 1 << " az " << az->soalat.size()
+            << "   |   zaman baqimande: " << mande / 60 << " daqiqe va "
+            << mande % 60 << " sanie" << std::endl;
+        std::cout << "-------------------------------------------------------" << std::endl;
+        az->soalat[i]->show();
+        std::cout << "\npasokh -> ";
+
+        std::string pasokh;
+        if (!std::getline(std::cin, pasokh)) {
+            break;
+        }
+        barge += std::to_string(i + 1) + ") " + (pasokh.empty() ? "-" : pasokh) + "\n";
+        javab_dade++;
+    }
+
+    for (size_t i = javab_dade; i < az->soalat.size(); i++) {
+        barge += std::to_string(i + 1) + ") -\n";
+    }
+    man.pasokhha[shomare_azmoon] = barge;
+
+    std::cout << "\npasokh haye shoma sabt shod. (" << javab_dade << " az "
+        << az->soalat.size() << " soal javab dade shod)" << std::endl;
+}
+
+// The student's own grades, one line per exam they are enrolled on.
+void nomarat() {
+    student& man = *list_stu[vared_shode_stu];
+    if (man.azmoonha.empty()) {
+        std::cout << "shoma dar hich azmooni sabt nam nashodeid!" << std::endl;
+        return;
+    }
+    std::cout << "======   nomarat   ======" << std::endl;
+    for (size_t i = 0; i < man.azmoonha.size(); i++) {
+        std::cout << man.azmoonha[i]->get_name() << " -> ";
+        int p = jaye_daneshjoo(man.azmoonha[i], vared_shode_stu);
+        if (p >= 0 && p < static_cast<int>(man.azmoonha[i]->nomreha.size())
+            && man.azmoonha[i]->nomreha[p] != NOMRE_DADE_NASHODE) {
+            std::cout << man.azmoonha[i]->nomreha[p] << std::endl;
+        }
+        else {
+            std::cout << "nomre dade nashode!" << std::endl;
+        }
     }
 }
 
