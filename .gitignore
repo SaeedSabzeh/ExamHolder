@@ -1,0 +1,24 @@
+# Visual Studio build output
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+
+# Compiler / linker intermediates
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.exe
+*.tlog
+*.log
+*.recipe
+*.resources
+*.cache
+*.lastbuildstate
+
+# Per-user Visual Studio settings
+*.vcxproj.user
+.vs/

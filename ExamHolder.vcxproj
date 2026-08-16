@@ -22,7 +22,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{8573832a-695a-4aa5-aec5-b84b772ad3cb}</ProjectGuid>
-    <RootNamespace>first</RootNamespace>
+    <RootNamespace>ExamHolder</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,12 +139,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="first.cpp" />
+    <ClCompile Include="io.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="professor.cpp" />
     <ClCompile Include="soal.cpp" />
     <ClCompile Include="student.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="io.h" />
     <ClInclude Include="professor.h" />
     <ClInclude Include="soal.h" />
     <ClInclude Include="student.h" />

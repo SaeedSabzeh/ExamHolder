@@ -33,9 +33,6 @@ public:
 class soal_truefalse :
 	public soal
 {
-private:
-	std::string dorost{ dorost };
-	std::string qalat{ qalat };
 public:
 	soal_truefalse(std::string ss);
 	virtual void show() const;
@@ -55,10 +52,10 @@ public:
 		:name{ n } ,time {tim} {
 	}
 	std::string name{ "exam" };
-	int tedad_soal = soalat.size();
 	std::vector<std::unique_ptr<soal>> soalat{};
-	std::string get_name() { return name; }
-	std::string set_name(std::string n) { this->name = n; }
+	std::string get_name() const { return name; }
+	void set_name(std::string n) { this->name = n; }
+	size_t get_tedad_soal() const { return soalat.size(); }
 	void add_soal();
 	std::vector<int> students{};
 	std::vector<double> nomreha{};

@@ -3,6 +3,7 @@
 #include "professor.h"
 #include <memory>
 #include <Windows.h>
+#include "io.h"
 
 
 std::vector<std::unique_ptr<professor>> list_pro{};
@@ -11,11 +12,15 @@ std::vector<std::shared_ptr<azmoon>> list_azmoon{};
 int vared_shode_pro{};
 int vared_shode_stu{};
 
+// Sentinel stored in azmoon::nomreha for a student who has not been graded yet.
+const double NOMRE_DADE_NASHODE = 111.2;
+
+bool name_karbari_tekrari(const std::string& u);
 void sabt_stu();
 void sabt_pro();
 bool vorood_stu();
 bool vorood_pro();
-void panel();
+bool panel();
 void panel_stu();
 void panel_pro();
 void azmoon_jadid();
@@ -26,9 +31,7 @@ void moroor();
 
 int main()
 {
- 
-    while (true) {
-        panel();
+    while (panel()) {
     }
     return 0;
 }
@@ -36,16 +39,19 @@ int main()
 
 
 
-void panel() {
+bool panel() {
     std::cout << "===============  panel azmoonyar  =============== \n";
     std::cout << "1 . vorood daneshjooyan" << std::endl;
     std::cout << "2 . vorood asatid" << std::endl;
     std::cout << "3 . sabt nam daneshjooyan" << std::endl;
     std::cout << "4 . sabt nam asatid" << std::endl;
+    std::cout << "5 . khorooj az barname" << std::endl;
 
     std::cout << "\n->";
     int n;
-    std::cin >> n;
+    if (!bekhan_adad(n)) {
+        return false;
+    }
     system("cls");
     switch (n) {
     case 1:
@@ -77,10 +83,27 @@ void panel() {
         std::cout << "========   sabte nam asatid   ========" << std::endl;
         sabt_pro();
         break;
+
+    case 5:
+        return false;
     }
 
-
+    return true;
 }
+bool name_karbari_tekrari(const std::string& u) {
+    for (size_t i = 0; i < list_stu.size(); i++) {
+        if (u == list_stu[i]->user_name) {
+            return true;
+        }
+    }
+    for (size_t i = 0; i < list_pro.size(); i++) {
+        if (u == list_pro[i]->user_name) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void sabt_stu() {
     std::string f, l, u, p;
     int n;
@@ -97,18 +120,16 @@ void sabt_stu() {
     std::cout << "->";
     std::cin >> u;
     std::cout << "\n";
-    for (size_t i = 0; i < list_stu.size(); i++) {
-        if (u == list_stu[i]->user_name || u == list_pro[i]->user_name) {
-            std::cout << "in name karbari qablan estefade shode ast!\n dobare talash konid." << std::endl;
-            goto label1;
-        }
+    if (name_karbari_tekrari(u)) {
+        std::cout << "in name karbari qablan estefade shode ast!\n dobare talash konid." << std::endl;
+        goto label1;
     }
     std::cout << "password :" << std::endl;
     std::cout << "->";
-    std::cin >> p;  
+    std::cin >> p;
     std::cout << "\n";
     std::cout << "shomare daneshjoyi :" << std::endl;
-    std::cin >> n;
+    bekhan_adad(n);
     list_stu.push_back(std::make_unique<student>(f, l, u, p, n));
 }
 
@@ -128,11 +149,9 @@ label1:
     std::cout << "->";
     std::cin >> u;
     std::cout << "\n";
-    for (size_t i = 0; i < list_stu.size(); i++) {
-        if (u == list_stu[i]->user_name || u == list_pro[i]->user_name) {
-            std::cout << "in name karbari qablan estefade shode ast!\n dobare talash konid." << std::endl;
-            goto label1;
-        }
+    if (name_karbari_tekrari(u)) {
+        std::cout << "in name karbari qablan estefade shode ast!\n dobare talash konid." << std::endl;
+        goto label1;
     }
     std::cout << "password :" << std::endl;
     std::cout << "->";
@@ -197,7 +216,7 @@ label3:
     std::cout << "\n->";
 
     int e;
-    std::cin >> e;
+    bekhan_adad(e);
     switch (e)
     {
     case 1:
@@ -226,7 +245,7 @@ void panel_stu () {
     std::cout << "ba movafaqiat vared shodid!" << std::endl;
     std::cout << "*******************************************************" << std::endl;
 
-    std::cout << "karbar : " << list_stu[vared_shode_pro]->first_name << " " << list_stu[vared_shode_pro]->last_name << std::endl;
+    std::cout << "karbar : " << list_stu[vared_shode_stu]->first_name << " " << list_stu[vared_shode_stu]->last_name << std::endl;
     std::cout << std::endl;
 
     std::cout << "1. moroor azmoon ha" << std::endl;
@@ -236,7 +255,7 @@ void panel_stu () {
 
     std::cout << "\n->";
     int e;
-    std::cin >> e;
+    bekhan_adad(e);
     switch (e)
     {
     case 1:
@@ -259,7 +278,7 @@ void azmoon_jadid() {
     std::cin >> nn;
     std::cout << "modat zaman azmoon ra be daqiqe vared konid:" << std::endl;
     int t{};
-    std::cin >> t;
+    bekhan_adad(t);
     list_azmoon.push_back(std::make_shared<azmoon>(nn,t));
     list_pro[vared_shode_pro]->azmoonha.push_back(list_azmoon[list_azmoon.size() - 1]);
     
@@ -269,7 +288,7 @@ void azmoon_jadid() {
     std::cout << "3. ezafe kardane in azmoon" << std::endl;
 
     int e;
-    std::cin >> e;
+    bekhan_adad(e);
     switch (e)
     {
     case 1:
@@ -280,7 +299,7 @@ void azmoon_jadid() {
         std::cout << "tedad daneshjooyan jahat ezafe kardan ra vared konid" << std::endl;
         int n;
         std::cout << "->";
-        std::cin >> n;
+        bekhan_adad(n);
         for (int j = 0; j < n; j++) {
             std::string esm, famil;
             int shomare;
@@ -290,20 +309,22 @@ void azmoon_jadid() {
             std::cout << "nam khanevadegi daneshjoo ra vared konid" << std::endl;
             std::cin >> famil;
             std::cout << "shomare daneshjooyi daneshjoo ra vared konid" << std::endl;
-            std::cin >> shomare;
-            for (int i = 0; i < list_stu.size(); i++) {
+            bekhan_adad(shomare);
+            for (size_t i = 0; i < list_stu.size(); i++) {
                 if (list_stu[i]->first_name == esm && list_stu[i]->last_name == famil && list_stu[i]->stu_number == shomare) {
                     list_stu[i]->azmoonha.push_back(list_azmoon[list_azmoon.size() - 1]);
-                    list_azmoon[list_azmoon.size() - 1]->students.push_back(i);
-                    list_azmoon[list_azmoon.size() - 1]->nomreha.push_back(111.2);
+                    list_stu[i]->pasokhha.push_back("");
+                    list_azmoon[list_azmoon.size() - 1]->students.push_back(static_cast<int>(i));
+                    list_azmoon[list_azmoon.size() - 1]->nomreha.push_back(NOMRE_DADE_NASHODE);
                     bood = true;
                 }
             }
             if (!bood) {
                 list_stu.push_back(std::make_unique<student>(esm, famil, shomare));
                 list_stu.back()->azmoonha.push_back(list_azmoon[list_azmoon.size() - 1]);
-                list_azmoon[list_azmoon.size() - 1]->students.push_back(list_stu.size() - 1);
-                list_azmoon[list_azmoon.size() - 1]->nomreha.push_back(111.2);
+                list_stu.back()->pasokhha.push_back("");
+                list_azmoon[list_azmoon.size() - 1]->students.push_back(static_cast<int>(list_stu.size() - 1));
+                list_azmoon[list_azmoon.size() - 1]->nomreha.push_back(NOMRE_DADE_NASHODE);
             }
         }
         goto label2;
@@ -315,15 +336,19 @@ void azmoon_jadid() {
    
 }
 void tarikhche() {
+    if (list_pro[vared_shode_pro]->azmoonha.empty()) {
+        std::cout << "hanooz hich azmooni ijad nakardeid!" << std::endl;
+        return;
+    }
     std::cout << "***************************" << std::endl;
-    for (int i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
+    for (size_t i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
         std::cout << i+1 << ".  "<<  list_pro[vared_shode_pro]->azmoonha[i]->get_name() << std::endl;
     }
     std::cout << "***************************" << std::endl;
     std::cout << "adade marboot be azmoon mored nazar ra vared konid:" << std::endl;
     std::cout << "\n->";
     int n;
-    std::cin >> n;
+    bekhan_adad(n);
     system("cls");
     std::cout << "***************************" << std::endl;
     std::cout << list_pro[vared_shode_pro]->azmoonha[n - 1]->name << " :" << std::endl;
@@ -332,10 +357,10 @@ void tarikhche() {
     std::cout << std::endl;
     std::cout << std::endl;
     if (list_pro[vared_shode_pro]->azmoonha[n - 1]->students.size() != 0) {
-        for (int i = 0; i < list_pro[vared_shode_pro]->azmoonha[n - 1]->students.size(); i++) {
+        for (size_t i = 0; i < list_pro[vared_shode_pro]->azmoonha[n - 1]->students.size(); i++) {
             int p = list_pro[vared_shode_pro]->azmoonha[n - 1]->students[i];
             std::cout << list_stu[p]->first_name << " " << list_stu[p]->last_name << std::endl;
-            if (list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[i] != 111.2) {
+            if (list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[i] != NOMRE_DADE_NASHODE) {
                 std::cout << "->";
                 std::cout << list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[i] << std::endl;
             }
@@ -353,12 +378,16 @@ void tarikhche() {
 
 }
 void modiriyat() {
+    if (list_pro[vared_shode_pro]->azmoonha.empty()) {
+        std::cout << "hanooz hich azmooni ijad nakardeid!" << std::endl;
+        return;
+    }
     std::cout << "adade marboot be azmoon mored nazar ra vared konid:" << std::endl;
-    for (int i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
+    for (size_t i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
         std::cout << i + 1 << ".  " << list_pro[vared_shode_pro]->azmoonha[i]->get_name() << std::endl;
     }
     int n;
-    std::cin >> n;
+    bekhan_adad(n);
 label4:
     system("cls");
 
@@ -374,7 +403,7 @@ label4:
 
     std::cout << "\n->" ;
     int e;
-    std::cin >> e;
+    bekhan_adad(e);
     switch (e)
     {
     case 1:
@@ -393,7 +422,7 @@ label4:
         std::cout << "tedad daneshjooyan jahat ezafe kardan ra vared konid" << std::endl;
         int oo;
         std::cout << "->";
-        std::cin >> oo;
+        bekhan_adad(oo);
         for (int j = 0; j < oo; j++) {
             std::string esm, famil;
             int shomare;
@@ -403,22 +432,22 @@ label4:
             std::cout << "nam khanevadegi daneshjoo ra vared konid" << std::endl;
             std::cin >> famil;
             std::cout << "shomare daneshjooyi daneshjoo ra vared konid" << std::endl;
-            std::cin >> shomare;
-            for (int i = 0; i < list_stu.size(); i++) {
+            bekhan_adad(shomare);
+            for (size_t i = 0; i < list_stu.size(); i++) {
                 if (list_stu[i]->first_name == esm && list_stu[i]->last_name == famil && list_stu[i]->stu_number == shomare) {
                     list_stu[i]->azmoonha.push_back(list_pro[vared_shode_pro]->azmoonha[n - 1]);
                     list_stu[i]->pasokhha.push_back("");
-                    list_pro[vared_shode_pro]->azmoonha[n - 1]->students.push_back(i);
-                    list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha.push_back(0.0);
+                    list_pro[vared_shode_pro]->azmoonha[n - 1]->students.push_back(static_cast<int>(i));
+                    list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha.push_back(NOMRE_DADE_NASHODE);
                     bood = true;
                 }
             }
             if (!bood) {
                 list_stu.push_back(std::make_unique<student>(esm, famil, shomare));
-                list_stu.back()->azmoonha.push_back(list_azmoon[list_azmoon.size() - 1]);
-                list_stu.back()->pasokhha.push_back({""});
-                list_pro[vared_shode_pro]->azmoonha[n - 1]->students.push_back(list_stu.size() - 1);
-                list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha.push_back(0.0);
+                list_stu.back()->azmoonha.push_back(list_pro[vared_shode_pro]->azmoonha[n - 1]);
+                list_stu.back()->pasokhha.push_back("");
+                list_pro[vared_shode_pro]->azmoonha[n - 1]->students.push_back(static_cast<int>(list_stu.size() - 1));
+                list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha.push_back(NOMRE_DADE_NASHODE);
             }
         }
         goto label4;
@@ -438,37 +467,65 @@ void tashih() {
     system("cls");
     std::cout << "======   tashih azmoonha   ======" << std::endl;
 
+    if (list_pro[vared_shode_pro]->azmoonha.empty()) {
+        std::cout << "hanooz hich azmooni ijad nakardeid!" << std::endl;
+        return;
+    }
     std::cout << "adade marboot be azmoon mored nazar ra vared konid:" << std::endl;
-    for (int i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
+    for (size_t i = 0; i < list_pro[vared_shode_pro]->azmoonha.size(); i++) {
         std::cout << i + 1 << ".  " << list_pro[vared_shode_pro]->azmoonha[i]->get_name() << std::endl;
     }
     int n;
-    std::cin >> n;
+    bekhan_adad(n);
 label4:
     std::cout << "***************************" << std::endl;
     std::cout << "azmoon ---> " << list_pro[vared_shode_pro]->azmoonha[n - 1]->name << std::endl;
     std::cout << "***************************" << std::endl;
     std::cout << "daneshjooye mored nazar ra entekhab konid:" << std::endl;
-    for (int i = 0; i < list_pro[vared_shode_pro]->azmoonha[n - 1]->students.size(); i++) {
-        if (list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[i] == 111.2) {
+    for (size_t i = 0; i < list_pro[vared_shode_pro]->azmoonha[n - 1]->students.size(); i++) {
+        if (list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[i] == NOMRE_DADE_NASHODE) {
             std::cout << i + 1 << ". " << list_stu[list_pro[vared_shode_pro]->azmoonha[n - 1]->students[i]]->first_name << " " << list_stu[list_pro[vared_shode_pro]->azmoonha[n - 1]->students[i]]->last_name << std::endl;
         }
     }
     std::cout << "\n->";
     int e{};
-    std::cin >> e;
-    std::cout << list_stu[list_pro[vared_shode_pro]->azmoonha[n - 1]->students[e - 1]]->pasokhha[] << std::endl;
+    bekhan_adad(e);
+
+    std::shared_ptr<azmoon> azmoon_faal = list_pro[vared_shode_pro]->azmoonha[n - 1];
+    int shomare_stu = azmoon_faal->students[e - 1];
+    int shomare_pasokh = -1;
+    for (size_t i = 0; i < list_stu[shomare_stu]->azmoonha.size(); i++) {
+        if (list_stu[shomare_stu]->azmoonha[i] == azmoon_faal) {
+            shomare_pasokh = static_cast<int>(i);
+            break;
+        }
+    }
+    if (shomare_pasokh >= 0 && shomare_pasokh < static_cast<int>(list_stu[shomare_stu]->pasokhha.size())
+        && !list_stu[shomare_stu]->pasokhha[shomare_pasokh].empty()) {
+        std::cout << list_stu[shomare_stu]->pasokhha[shomare_pasokh] << std::endl;
+    }
+    else {
+        std::cout << "pasokhi sabt nashode ast!" << std::endl;
+    }
 
     std::cout << "nomre ra vared konid:" << std::endl;
     std::cout << "\n->";
     int k;
-    std::cin >> k;
+    bekhan_adad(k);
     list_pro[vared_shode_pro]->azmoonha[n - 1]->nomreha[e - 1] = k;
-    goto label4;
+
+    std::cout << "1. tashih daneshjooye digar" << std::endl;
+    std::cout << "2. bazgasht be menu" << std::endl;
+    std::cout << "\n->";
+    int edame{};
+    bekhan_adad(edame);
+    if (edame == 1) {
+        goto label4;
+    }
 }
 void moroor() {
     std::cout << "======   moroor azmoon ha   ======" << std::endl;
-    for (int i = 0; i < list_stu[vared_shode_stu]->azmoonha.size(); i++) {
+    for (size_t i = 0; i < list_stu[vared_shode_stu]->azmoonha.size(); i++) {
         std::cout << list_stu[vared_shode_stu]->azmoonha[i]->name << std::endl;
     }
 

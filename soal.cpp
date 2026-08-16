@@ -1,4 +1,5 @@
 #include "soal.h"
+#include "io.h"
 soal::soal(std::string so)
 	: soorat{ so } {
 
@@ -33,12 +34,12 @@ void soal_truefalse::show() const {
 void azmoon::add_soal() {
 	int tedad{ 0 };
 	std::cout << "tedad soalati ke mikhahid ezafe konid:\n" << std::endl;
-	std::cin >> tedad;
+	bekhan_adad(tedad);
 	for (int i = 0; i < tedad; i++) {
 		std::cout << "type e soal ra moshakhas mokin: \n 1.chahar gozinei \n 2.tashrihi \n 3.sahih qalat\n " << std::endl;
 		int a;
 		std::string u,sss, y, d, see, ch;
-		std::cin >> a;
+		bekhan_adad(a);
 
 		switch (a) {
 		case 1:
