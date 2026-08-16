@@ -11,7 +11,11 @@ enrolled in.
 
 Open `ExamHolder.sln` in Visual Studio 2019 or later and build. The project
 targets the v142 toolset; Visual Studio 2022 will offer to retarget it to v143,
-which is fine. There are no dependencies beyond the standard library.
+which is fine.
+
+There are no third-party dependencies, but the program is Windows-only: it
+clears the screen with `system("cls")`. It compiles elsewhere and will simply
+print the command name instead of clearing.
 
 ## Design
 
@@ -72,7 +76,7 @@ Menus and prompts are Persian written in Latin characters, the usual workaround
 for a Windows console that will not render Persian script. Identifiers follow
 the same convention:
 
-| | |
+| Term | Meaning |
 |---|---|
 | `azmoon` | exam |
 | `soal` | question |
@@ -81,7 +85,7 @@ the same convention:
 | `nomre` | grade |
 | `pasokh` | answer |
 | `daneshjoo` | student |
-| `ostad` / `asatid` | professor / professors |
+| `asatid` | professors |
 | `vorood` | login |
 | `sabt nam` | registration |
 | `tashih` | grading |

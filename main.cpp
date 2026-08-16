@@ -2,7 +2,7 @@
 #include "student.h"
 #include "professor.h"
 #include <memory>
-#include <Windows.h>
+#include <cstdlib>
 #include "io.h"
 
 
